@@ -1,26 +1,37 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import Routes from "./routes";
+import loadable from "@loadable/component";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+const NotFound = loadable(() => import("@/pages/404/index.js"));
+const Auth = loadable(() => import("@/pages/Auth/index.js"));
+
+class App extends React.Component{
+
+  getConfirmation() {
+
+  }
+
+  render() {
+    return (
+      <Router getUserConfirmation={this.getConfirmation.bind(this)}>
+        <Route path="" component={Auth}/>
+        <Switch>
+          {Routes.map(({component: Comp, props, ...item}, index) => {
+            return <Route
+              path={item.path}
+              exact={item.exact}
+              key={index}
+              render={(routerProps) => <>
+                <Comp {...routerProps} {...props}/>
+              </>}
+            />
+          })}
+          <Route path="" component={NotFound}/>
+        </Switch>
+      </Router>
+    );
+  }
 }
 
 export default App;
